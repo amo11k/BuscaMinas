@@ -9,12 +9,14 @@ import android.widget.ImageButton;
 public class Bomb extends ImageButton {
     public boolean bomb;
     public int row, col;
+    public States state;
 
     public Bomb(Context context, boolean bomb, int row, int col) {
         super(context);
         this.bomb = bomb;
         this.row = row;
         this.col = col;
+        this.state = States.NEW;
 
     }
 

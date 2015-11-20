@@ -1,6 +1,8 @@
 package com.example.alu53381650f.buscaminas;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,45 +42,8 @@ public class MainActivity extends AppCompatActivity {
         clock = new Clock(clockView);
         clock.run();*/
 
-        for (int i = 0; i < NUMERO_ROWS; i++) {
-            for (int j = 0; j < NUMERO_COLS; j++) {
-                buttons[i][j] = new Bomb(getApplicationContext(), false, 0, 0);
-                buttons[i][j].setRow(i);
-                buttons[i][j].setCol(j);
-                buttons[i][j].setImageDrawable(getResources().getDrawable(R.drawable.free));
-                buttons[i][j].setLayoutParams(new GridLayout.LayoutParams());
-                buttons[i][j].setPadding(0, 0, 0, 0);
-                tablero.addView(buttons[i][j], new GridLayout.LayoutParams(tablero.spec(i), tablero.spec(j)));
-            }
-        }
-        while (contador_bombas <= 45) {
-            int i = (int) (Math.random() * 20);
-            int j = (int) (Math.random() * 9);
-            buttons[i][j].setBomb();
-            contador_bombas++;
-        }
+        init();
 
-        for (int i = 0; i < NUMERO_ROWS; i++) {
-            for (int j = 0; j < NUMERO_COLS; j++) {
-                buttons[i][j].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Bomb b = (Bomb) v;
-                        if (b.getState()) {
-                            ((Bomb) v).setImageDrawable(getResources().getDrawable(R.drawable.mine_wrong));
-                        } else {
-                            scoreLabel.setText(String.valueOf(score));
-                            score++;
-                            comprobar((Bomb) v, buttons);
-                            /*row = b.getRow();
-                            col = b.getCol();
-                            ((Bomb) v).setImageDrawable(getResources().getDrawable(R.drawable.c0));*/
-
-                        }
-                    }
-                });
-            }
-        }
 
     }
 
@@ -93,53 +58,60 @@ public class MainActivity extends AppCompatActivity {
             proxibombs++;
         } else {
             bombs[x - 1][y - 1].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x-1][y-1], buttons);
         }
         //Mid Sup
         if (bombs[x][y - 1].getState()) {
             proxibombs++;
         } else {
             bombs[x][y - 1].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x][y - 1],buttons);
         }
         //ESq DrcSup
         if (bombs[x + 1][y - 1].getState()) {
             proxibombs++;
         } else {
             bombs[x + 1][y - 1].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x + 1][y - 1],buttons);
         }
         //MID IZq
         if (bombs[x - 1][y].getState()) {
             proxibombs++;
         } else {
             bombs[x - 1][y].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x - 1][y],buttons);
         }
         // MID DRCH
         if (bombs[x + 1][y].getState()) {
             proxibombs++;
         } else {
             bombs[x + 1][y].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x + 1][y],buttons);
         }
         //MID BOTTOM
         if (bombs[x][y + 1].getState()) {
             proxibombs++;
         } else {
             bombs[x][y + 1].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x][y + 1],buttons);
         }
         //ESQ IZQ INF
         if (bombs[x - 1][y + 1].getState()) {
             proxibombs++;
         } else {
             bombs[x - 1][y + 1].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x - 1][y + 1],buttons);
         }
         if (bombs[x + 1][y + 1].getState()) {
             proxibombs++;
         } else {
             bombs[x + 1][y + 1].setImageDrawable(getResources().getDrawable(R.drawable.c0));
+            //comprobar(bombs[x + 1][y + 1],buttons);
         }
 
         System.out.println("  " + b.getState() + "   " + proxibombs);
-        switch (proxibombs)
 
-        {
+        switch (proxibombs) {
             case 0:
                 b.setImageDrawable(getResources().getDrawable(R.drawable.c0));
                 break;
@@ -168,6 +140,77 @@ public class MainActivity extends AppCompatActivity {
                 b.setImageDrawable(getResources().getDrawable(R.drawable.c8));
                 break;
             default:
+        }
+    }
+
+    public void gameOver() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setMessage("You are dead. Replay?");
+        alertDialogBuilder.setIcon(R.drawable.mine_wrong);
+
+        alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                init();
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public void init() {
+        contador_bombas = 0;
+        score = 0;
+        scoreLabel.setText(String.valueOf(score));
+        for (int i = 0; i < NUMERO_ROWS; i++) {
+            for (int j = 0; j < NUMERO_COLS; j++) {
+                buttons[i][j] = new Bomb(getApplicationContext(), false, 0, 0);
+                buttons[i][j].setRow(i);
+                buttons[i][j].setCol(j);
+                buttons[i][j].setImageDrawable(getResources().getDrawable(R.drawable.free));
+                buttons[i][j].setLayoutParams(new GridLayout.LayoutParams());
+                buttons[i][j].setPadding(0, 0, 0, 0);
+                tablero.addView(buttons[i][j], new GridLayout.LayoutParams(tablero.spec(i), tablero.spec(j)));
+            }
+        }
+        while (contador_bombas <= 45) {
+            int i = (int) (Math.random() * 20);
+            int j = (int) (Math.random() * 9);
+            buttons[i][j].setBomb();
+            contador_bombas++;
+        }
+
+        for (int i = 0; i < NUMERO_ROWS; i++) {
+            for (int j = 0; j < NUMERO_COLS; j++) {
+                buttons[i][j].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bomb b = (Bomb) v;
+                        if (b.getState()) {
+                            ((Bomb) v).setImageDrawable(getResources().getDrawable(R.drawable.mine_wrong));
+                            gameOver();
+
+
+                        } else {
+                            score++;
+                            scoreLabel.setText(String.valueOf(score));
+                            comprobar((Bomb) v, buttons);
+                            /*row = b.getRow();
+                            col = b.getCol();
+                            ((Bomb) v).setImageDrawable(getResources().getDrawable(R.drawable.c0));*/
+
+                        }
+                    }
+                });
+            }
         }
     }
 }
